@@ -1,0 +1,89 @@
+#include <stdio.h>
+
+// Function to calculate the Greatest Common Divisor (GCD) of two numbers
+int gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+}
+
+// Function to calculate the modular inverse using Extended Euclidean Algorithm
+int modInverse(int a, int m) {
+    int m0 = m;
+    int y = 0, x = 1;
+
+    if (m == 1)
+        return 0;
+
+    while (a > 1) {
+        int q = a / m;
+        int t = m;
+
+        m = a % m;
+        a = t;
+        t = y;
+
+        y = x - q * y;
+        x = t;
+    }
+
+    if (x < 0)
+        x += m0;
+
+    return x;
+}
+
+// Function to encrypt the plaintext using RSA
+int encrypt(int plaintext, int e, int n) {
+    int ciphertext = 1;
+     int i;
+    for ( i = 0; i < e; i++)
+        ciphertext = (ciphertext * plaintext) % n;
+
+    return ciphertext;
+}
+
+// Function to decrypt the ciphertext using RSA
+int decrypt(int ciphertext, int d, int n) {
+    int plaintext = 1;
+    int i;
+    for (i = 0; i < d; i++)
+        plaintext = (plaintext * ciphertext) % n;
+
+    return plaintext;
+}
+
+int main() {
+    int p, q, n, phi, e, d, plaintext, ciphertext, decryptedtext;
+
+    printf("Enter prime number p: ");
+    scanf("%d", &p);
+
+    printf("Enter prime number q: ");
+    scanf("%d", &q);
+
+    printf("Enter plaintext: ");
+    scanf("%d", &plaintext);
+
+    printf("Enter public exponent e (should be relatively prime to (p-1)*(q-1)): ");
+    scanf("%d", &e);
+
+    // Step 2: Multiply the above two primes to find n
+    n = p * q;
+
+    // Step 3: Calculate Euler's Totient Function φ
+    phi = (p - 1) * (q - 1);
+
+    // Step 4: Calculate the private key d such that d * e ≡ 1 (mod φ)
+    d = modInverse(e, phi);
+
+    // Step 5: Encrypt and Decrypt
+    ciphertext = encrypt(plaintext, e, n);
+    decryptedtext = decrypt(ciphertext, d, n);
+
+    printf("Plaintext: %d\n", plaintext);
+    printf("Ciphertext: %d\n", ciphertext);
+    printf("Decryptedtext: %d\n", decryptedtext);
+
+    return 0;
+}
