@@ -1,0 +1,70 @@
+#include <stdio.h>
+
+#define MAX 10
+#define INF 999
+
+int prim(int cost[MAX][MAX], int source, int n) {
+    int visited[MAX] = {0}, minCost[MAX], totalCost = 0;
+
+    for (int i = 0; i < n; i++) {
+        minCost[i] = cost[source][i];
+    }
+    visited[source] = 1;
+
+    for (int count = 1; count < n; count++) {
+        int min = INF, u = -1;
+
+        for (int j = 0; j < n; j++) {
+            if (!visited[j] && minCost[j] < min) {
+                min = minCost[j];
+                u = j;
+            }
+        }
+
+        if (u == -1) break;
+
+        visited[u] = 1;
+        totalCost += min;
+        printf("\n %d -> %d, cost = %d", source + 1, u + 1, min); // Print the edge
+
+        for (int v = 0; v < n; v++) {
+            if (!visited[v] && cost[u][v] < minCost[v]) {
+                minCost[v] = cost[u][v];
+            }
+        }
+    }
+    return totalCost;
+}
+
+int main() {
+    int cost[MAX][MAX], n, source;
+
+    printf("\nEnter the number of vertices: ");
+    scanf("%d", &n);
+
+    if (n < 1 || n > MAX) {
+        printf("\nInvalid number of vertices. Must be between 1 and %d.", MAX);
+        return 1;
+    }
+
+    printf("\nEnter the cost matrix (0 for self-loop and 999 for no edge):\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &cost[i][j]);
+        }
+    }
+
+    printf("\nEnter the source vertex (1 to %d): ", n);
+    scanf("%d", &source);
+    source--; // Adjust for 0-based index
+
+    if (source < 0 || source >= n) {
+        printf("\nInvalid source vertex.");
+        return 1;
+    }
+
+    int totalCost = prim(cost, source, n);
+    printf("\n\nTotal cost = %d", totalCost);
+
+    return 0;
+}
